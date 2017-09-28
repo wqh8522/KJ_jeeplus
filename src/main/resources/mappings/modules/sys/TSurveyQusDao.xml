@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TSurveyQusDao">
+    
+	<sql id="tSurveyQusColumns">
+		a.id AS "id",
+		a.survey_id AS "surveyId",
+		a.stid AS "stid",
+		a.xh AS "xh"
+	</sql>
+	
+	<sql id="tSurveyQusJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TSurveyQus" >
+		SELECT 
+			<include refid="tSurveyQusColumns"/>
+		FROM t_survey_qus a
+		<include refid="tSurveyQusJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSurveyQus" >
+		SELECT 
+			<include refid="tSurveyQusColumns"/>
+		FROM t_survey_qus a
+		<include refid="tSurveyQusJoins"/>
+		<where>
+			a.surveyId = #{surveyId}
+		</where>
+		ORDER BY ${a.xh asc}
+	</select>
+	
+	<select id="findAllList" resultType="TSurveyQus" >
+		SELECT 
+			<include refid="tSurveyQusColumns"/>
+		FROM t_survey_qus a
+		<include refid="tSurveyQusJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_survey_qus(
+			id,
+			survey_id,
+			stid,
+			xh
+		) VALUES (
+			#{id},
+			#{surveyId},
+			#{stid},
+			#{xh}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_survey_qus SET 	
+			survey_id = #{surveyId},
+			stid = #{stid},
+			xh = #{xh}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_survey_qus
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteBySurvey">
+		DELETE FROM t_survey_qus
+		WHERE survey_id = #{surveyId}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_survey_qus SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TSurveyQus" statementType="STATEMENT">
+		select * FROM t_survey_qus  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

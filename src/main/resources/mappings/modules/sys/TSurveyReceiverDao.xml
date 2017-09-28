@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TSurveyReceiverDao">
+    
+	<sql id="tSurveyReceiverColumns">
+		a.id AS "id",
+		a.survey_id AS "surveyId",
+		a.user_id AS "userId"
+	</sql>
+	
+	<sql id="tSurveyReceiverJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TSurveyReceiver" >
+		SELECT 
+			<include refid="tSurveyReceiverColumns"/>
+		FROM t_survey_receiver a
+		<include refid="tSurveyReceiverJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSurveyReceiver" >
+		SELECT 
+			<include refid="tSurveyReceiverColumns"/>
+		FROM t_survey_receiver a
+		<include refid="tSurveyReceiverJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findUnreadNum" resultType="string" >
+		SELECT 
+			COUNT(*)
+		FROM t_survey_receiver a 
+		WHERE survey_id=#{surveyId} 
+	</select>
+	
+	<select id="findAllList" resultType="TSurveyReceiver" >
+		SELECT 
+			<include refid="tSurveyReceiverColumns"/>
+		FROM t_survey_receiver a
+		<include refid="tSurveyReceiverJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_survey_receiver(
+			id,
+			survey_id,
+			user_id
+		) VALUES (
+			#{id},
+			#{surveyId},
+			#{userId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_survey_receiver SET 	
+			survey_id = #{surveyId},
+			user_id = #{userId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_survey_receiver
+		WHERE survey_id = #{surveyId}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_survey_receiver SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TSurveyReceiver" statementType="STATEMENT">
+		select * FROM t_survey_receiver  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TSurveyAnswerDao">
+    
+	<sql id="tSurveyAnswerColumns">
+		a.id AS "id",
+		a.wjid AS "wjid",
+		a.stid AS "stid",
+		a.stda AS "stda",
+		a.user_id AS "userId",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="tSurveyAnswerJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TSurveyAnswer" >
+		SELECT 
+			<include refid="tSurveyAnswerColumns"/>
+		FROM t_survey_answer a
+		<include refid="tSurveyAnswerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findJoinCount" resultType="string" >
+		SELECT
+			COUNT(*)
+		FROM (
+			SELECT 
+				a.user_id
+			FROM t_survey_answer a
+			WHERE a.wjid = #{wjid}
+			GROUP BY a.user_id
+		)
+	</select>
+	
+	<select id="findAnswer" resultType="TSurveyAnswer" >
+		SELECT 
+			<include refid="tSurveyAnswerColumns"/>
+		FROM t_survey_answer a
+		<include refid="tSurveyAnswerJoins"/>
+		WHERE a.wjid = #{wjid}
+		AND a.stid = #{stid}
+		AND a.user_id = #{userId}
+		AND a.stda = #{stda}
+	</select>
+	
+	<select id="findUserAnswer" resultType="TSurveyAnswer" >
+		SELECT 
+			<include refid="tSurveyAnswerColumns"/>
+		FROM t_survey_answer a
+		<include refid="tSurveyAnswerJoins"/>
+		WHERE a.wjid = #{wjid}
+		AND a.user_id = #{userId}
+	</select>
+	
+	<select id="findList" resultType="TSurveyAnswer" >
+		SELECT 
+			<include refid="tSurveyAnswerColumns"/>
+		FROM t_survey_answer a
+		<include refid="tSurveyAnswerJoins"/>
+		<where>
+			1=1
+			<if test="wjid != null and wjid != ''">
+				AND a.wjid = #{wjid}
+			</if>
+			<if test="stid != null and stid != ''">
+				AND a.stid = #{stid}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="stda != null and stda != ''">
+				AND a.stda = #{stda}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TSurveyAnswer" >
+		SELECT 
+			<include refid="tSurveyAnswerColumns"/>
+		FROM t_survey_answer a
+		<include refid="tSurveyAnswerJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_survey_answer(
+			id,
+			wjid,
+			stid,
+			stda,
+			user_id,
+			create_date
+		) VALUES (
+			#{id},
+			#{wjid},
+			#{stid},
+			#{stda},
+			#{userId},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_survey_answer SET 	
+			wjid = #{wjid},
+			stid = #{stid},
+			stda = #{stda},
+			user_id = #{userId},
+			create_date = #{createDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_survey_answer
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_survey_answer SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TSurveyAnswer" statementType="STATEMENT">
+		select * FROM t_survey_answer  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

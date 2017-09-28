@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TSysLcjlDao">
+    
+	<sql id="tSysLcjlColumns">
+		a.id AS "id",
+		a.sjid AS "sjid",
+		a.clzt AS "clzt",
+		a.clyj AS "clyj",
+		a.clr AS "clr",
+		a.clrm AS "clrm",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="tSysLcjlJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TSysLcjl" >
+		SELECT 
+			<include refid="tSysLcjlColumns"/>
+		FROM t_sys_lcjl a
+		<include refid="tSysLcjlJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSysLcjl" >
+		SELECT 
+			<include refid="tSysLcjlColumns"/>
+		FROM t_sys_lcjl a
+		<include refid="tSysLcjlJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TSysLcjl" >
+		SELECT 
+			<include refid="tSysLcjlColumns"/>
+		FROM t_sys_lcjl a
+		<include refid="tSysLcjlJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_sys_lcjl(
+			id,
+			sjid,
+			clzt,
+			clyj,
+			clr,
+			clrm,
+			create_date
+		) VALUES (
+			#{id},
+			#{sjid},
+			#{clzt},
+			#{clyj},
+			#{clr},
+			#{clrm},
+			#{createDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_sys_lcjl SET 	
+			sjid = #{sjid},
+			clzt = #{clzt},
+			clyj = #{clyj},
+			clr = #{clr},
+			clrm = #{clrm}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_sys_lcjl
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_sys_lcjl SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TSysLcjl" statementType="STATEMENT">
+		select * FROM t_sys_lcjl  where ${propertyName} = '${value}'
+	</select>
+	
+	<select id="getByDataId" resultType="TSysLcjl" >
+		SELECT 
+			<include refid="tSysLcjlColumns"/>
+		FROM t_sys_lcjl a
+		WHERE a.sjid = #{sjid}
+		ORDER BY a.create_date ASC
+	</select>
+	
+</mapper>

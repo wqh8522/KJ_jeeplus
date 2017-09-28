@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TSurveyTypeDao">
+    
+	<sql id="tSurveyTypeColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.create_by AS "createBy.id",
+		u.name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.create_org AS "createOrg",
+		a.sfqy AS "sfqy",
+		a.sfgk AS "sfgk"
+	</sql>
+	
+	<sql id="tSurveyTypeJoins">
+		LEFT JOIN sys_office o on a.create_org = o.id
+		LEFT JOIN sys_user u on a.create_by=u.id
+	</sql>
+	
+    
+	<select id="get" resultType="TSurveyType" >
+		SELECT 
+			<include refid="tSurveyTypeColumns"/>
+		FROM t_survey_type a
+		<include refid="tSurveyTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findDetail" resultType="TSurveyType" >
+		SELECT 
+			<include refid="tSurveyTypeColumns"/>,
+			(SELECT COUNT(*) FROM t_survey_question q WHERE q.type='1' AND q.type_id=#{id}) AS "singlenum",
+			(SELECT COUNT(*) FROM t_survey_question q WHERE q.type='2' AND q.type_id=#{id}) AS "multinum"
+		FROM t_survey_type a
+		<include refid="tSurveyTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSurveyType" >
+		SELECT 
+			<include refid="tSurveyTypeColumns"/>
+		FROM t_survey_type a
+		<include refid="tSurveyTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND (a.create_by = #{currentUser.id} OR (a.sfgk = '1' AND a.sfqy='1'))
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TSurveyType" >
+		SELECT 
+			<include refid="tSurveyTypeColumns"/>
+		FROM t_survey_type a
+		<include refid="tSurveyTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_survey_type(
+			id,
+			name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			create_org,
+			sfgk,
+			sfqy
+		) VALUES (
+			#{id},
+			#{name},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{createOrg},
+			#{sfgk},
+			#{sfqy}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_survey_type SET 	
+			name = #{name},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			create_org = #{createOrg},
+			sfgk = #{sfgk},
+			sfqy = #{sfqy}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_survey_type
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_survey_type SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TSurveyType" statementType="STATEMENT">
+		select * FROM t_survey_type  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

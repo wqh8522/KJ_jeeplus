@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TSurveyQuestionDao">
+    
+	<sql id="tSurveyQuestionColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.type_id AS "typeId",
+		a.title AS "title",
+		a.create_org AS "createOrg",
+		a.create_by AS "createBy.id",
+		u.name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		t.name AS "typeName"
+	</sql>
+	
+	<sql id="tSurveyQuestionJoins">
+		LEFT JOIN sys_office o ON a.create_org = o.id
+		LEFT JOIN sys_user u ON a.create_by=u.id
+		LEFT JOIN t_survey_type t ON a.type_id = t.id
+	</sql>
+	
+    
+	<select id="get" resultType="TSurveyQuestion" >
+		SELECT 
+			<include refid="tSurveyQuestionColumns"/>
+		FROM t_survey_question a
+		<include refid="tSurveyQuestionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSurveyQuestion" >
+		SELECT 
+			<include refid="tSurveyQuestionColumns"/>
+		FROM t_survey_question a
+		<include refid="tSurveyQuestionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="typeId != null and typeId != ''">
+				AND a.type_id = #{typeId}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+		</where>
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListBySurvey" resultType="TSurveyQuestion" >
+		SELECT 
+			<include refid="tSurveyQuestionColumns"/>
+		FROM t_survey_question a
+		LEFT JOIN t_survey_qus q ON a.id=q.stid
+		<include refid="tSurveyQuestionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND q.survey_id = #{surveyId}
+		</where>
+		ORDER BY q.xh ASC
+	</select>
+	
+	<select id="findListByTypeAndCount" resultType="TSurveyQuestion" >
+		SELECT 
+			<include refid="tSurveyQuestionColumns"/>
+		FROM t_survey_question a
+		<include refid="tSurveyQuestionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.type = #{type}
+			AND a.type_id = #{typeId}
+		</where>
+		ORDER BY dbms_random.value()
+	</select>
+	
+	<select id="findAllList" resultType="TSurveyQuestion" >
+		SELECT 
+			<include refid="tSurveyQuestionColumns"/>
+		FROM t_survey_question a
+		<include refid="tSurveyQuestionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_survey_question(
+			id,
+			type,
+			type_id,
+			title,
+			create_org,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{type},
+			#{typeId},
+			#{title},
+			#{createOrg},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_survey_question SET 	
+			type = #{type},
+			type_id = #{typeId},
+			title = #{title},
+			create_org = #{createOrg},	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_survey_question
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_survey_question SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TSurveyQuestion" statementType="STATEMENT">
+		select * FROM t_survey_question  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

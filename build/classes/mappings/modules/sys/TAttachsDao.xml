@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.dao.TAttachsDao">
+    
+	<sql id="tAttachsColumns">
+		a.id AS "id",
+		a.file_name AS "fileName",
+		a.module_id AS "moduleId",
+		a.file_path AS "filePath",
+		a.file_type AS "fileType"
+	</sql>
+	
+	<sql id="tAttachsJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TAttachs" >
+		SELECT 
+			<include refid="tAttachsColumns"/>
+		FROM t_attachs a
+		<include refid="tAttachsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findByModule" resultType="TAttachs" >
+		SELECT 
+			<include refid="tAttachsColumns"/>
+		FROM t_attachs a
+		<include refid="tAttachsJoins"/>
+		WHERE a.module_id = #{moduleId}
+	</select>
+	
+	<select id="findList" resultType="TAttachs" >
+		SELECT 
+			<include refid="tAttachsColumns"/>
+		FROM t_attachs a
+		<include refid="tAttachsJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TAttachs" >
+		SELECT 
+			<include refid="tAttachsColumns"/>
+		FROM t_attachs a
+		<include refid="tAttachsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_attachs(
+			id,
+			file_name,
+			module_id,
+			file_path,
+			file_type
+		) VALUES (
+			#{id},
+			#{fileName},
+			#{moduleId},
+			#{filePath},
+			#{fileType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_attachs SET 	
+			file_name = #{fileName},
+			module_id = #{moduleId},
+			file_path = #{filePath},
+			file_type = #{fileType}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM t_attachs
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE t_attachs SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TAttachs" statementType="STATEMENT">
+		select * FROM t_attachs  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>
